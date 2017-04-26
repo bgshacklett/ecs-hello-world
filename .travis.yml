@@ -17,6 +17,6 @@ script:
   - echo "No tests to be run"
 
 after_success:
-  - eval $(aws ecr get-login --region us-east-1 # Log into the ECR repository.
+  - eval $(aws ecr get-login --region us-east-1) # Log into the ECR repository.
   - docker tag ecr-hello-world:latest 533030558950.dkr.ecr.us-east-2.amazonaws.com/ecr-hello-world:latest
   - docker push 533030558950.dkr.ecr.us-east-2.amazonaws.com/ecr-hello-world:latest
