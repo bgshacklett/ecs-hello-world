@@ -1,0 +1,22 @@
+sudo: required
+
+language: php
+
+services:
+  - docker
+
+before_install:
+  - docker --version
+  - pip install --user awscli # Install the AWS CLI
+  - export PATH=$PATH:HOME/.local/bin # Put the AWS CLI in the path
+  - docker build -t ecr-hello-world . # Build the docker image
+  - docker run -d -p 8080 ecr-hello-world # Ensure that it runs
+  - docker ps -a
+
+script:
+  - echo "No tests to be run"
+
+after_success:
+  - eval $(aws ecr get-login --region us-east-1) # Log into the ECR repository.
+  - docker tag ecr-hello-world:latest 533030558950.dkr.ecr.us-east-2.amazonaws.com/ecr-hello-world:latest
+  - docker push 533030558950.dkr.ecr.us-east-2.amazonaws.com/ecr-hello-world:latest
