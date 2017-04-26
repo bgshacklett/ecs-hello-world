@@ -14,6 +14,6 @@ before_install:
   - docker ps -a
 
 script:
-  - eval $(aws ecr get-login --region us-east-2) # Log into the ECR repository.
-  - docker tag ecr-hello-world:latest 533030558950.dkr.ecr.us-east-2.amazonaws.com/ecr-hello-world:latest
-  - docker push 533030558950.dkr.ecr.us-east-2.amazonaws.com/ecr-hello-world:latest
+  - eval $(aws ecr get-login --region ${AWS_ECR_REPO_REGION}) # Log into the ECR repository.
+  - docker tag ecr-hello-world:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REPO_REGION}.amazonaws.com/${AWS_ECR_REPO_NAME}:latest
+  - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REPO_REGION}.amazonaws.com/${AWS_ECR_REPO_NAME}:latest
