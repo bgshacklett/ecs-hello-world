@@ -11,23 +11,32 @@ before_install:
   - export PATH=$PATH:HOME/.local/bin     # Put the AWS CLI in the path
 
 script:
-  - docker build -t ecr-hello-world .     # Build the docker image
-  - docker run -d -p 8080 ecr-hello-world # Ensure that it runs
-  - docker ps -a                          # Log running containers.
-  - eval $(aws ecr get-login --region ${AWS_ECR_REPO_REGION}) # Log in to ECR
-  - docker tag ecr-hello-world:${TRAVIS_TAG:-${TRAVIS_COMMIT}}
-    ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REPO_REGION}.amazonaws.com/${AWS_ECR_REPO_NAME}:${TRAVIS_TAG:-${TRAVIS_COMMIT}}
-  - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REPO_REGION}.amazonaws.com/${AWS_ECR_REPO_NAME}:${TRAVIS_TAG:-${TRAVIS_COMMIT}}
+  - source lib/functions.sh                                   # Source helpers
+  - export ENVIRONMENT=$(get_environment "${TRAVIS_BRANCH}")  # Env from branch
+    export DOCKER_IMG_NAME="ecs-hello-world"
+  - export DOCKER_IMG_TAG=${TRAVIS_TAG:-$TRAVIS_COMMIT}
+  - export AWS_ECR_URI=$(get_aws_ecr_uri
+                         "${AWS_ACCOUNT_ID}"
+                         "${AWS_ECR_REPO_REGION}"
+                         "${AWS_ECR_REPO_NAME}"
+                         "${DOCKER_IMG_TAG}")
+  - docker build -t ecr-hello-world .                         # Build the image
+  - docker run --detach --publish 8080 ecr-hello-world        # Ensure it runs
+  - docker ps -a                                              # Log containers
+  - eval $(aws ecr get-login --region "${AWS_ECR_REPO_REGION}") # Log in to ECR
+  - docker tag "${DOCKER_IMG_NAME}" "${AWS_ECR_URI}"
+  - docker push "${AWS_ECR_URI}"
   - python3 scripts/generate_task_definition.py
-    --input-file task-definition.json
-    --output-file task-definition-final.json
-    --tag ${TRAVIS_TAG:-latest}
-    --environment ${TRAVIS_TAG+prod}
+            --input-file task-definition.json
+            --output-file task-definition-final.json
+            --tag ${TRAVIS_TAG:-$TRAVIS_COMMIT}
+            --environment "${ENVIRONMENT}"
 
 after_success: true
 
 deploy:
   provider: script
-  script: scripts/deploy.sh --enviroment production --tag $TRAVIS_TAG
+  script: scripts/deploy.sh --enviroment "${ENVIRONMENT}"
+                            --tag "${TRAVIS_TAG}"
   on:
     tags: true # Deploy when a Release is created in GitHub.
