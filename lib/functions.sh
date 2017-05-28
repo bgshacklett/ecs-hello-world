@@ -1,9 +1,9 @@
 get_aws_ecr_uri()
 {
-  readonly AWS_ACCOUNT_ID=$1
-  readonly AWS_ECR_REPO_REGION=$2
-  readonly AWS_ECR_REPO_NAME=$3
-  readonly DOCKER_IMG_TAG=$4
+  local -r AWS_ACCOUNT_ID=$1
+  local -r AWS_ECR_REPO_REGION=$2
+  local -r AWS_ECR_REPO_NAME=$3
+  local -r DOCKER_IMG_TAG=$4
 
   local aws_ecr_endpoint
   aws_ecr_endpoint="$AWS_ACCOUNT_ID"
