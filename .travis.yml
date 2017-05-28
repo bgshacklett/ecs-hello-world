@@ -1,7 +1,7 @@
 sudo: required
 
 language: python # Required for Deployment Script
-python: 3.7      # Specify Python3
+python: 3.6      # Specify Python3
 
 services:
   - docker
