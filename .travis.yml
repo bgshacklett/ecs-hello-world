@@ -1,14 +1,16 @@
 sudo: required
 
 language: python # Required for Deployment Script
+python: 3.7      # Specify Python3
 
 services:
   - docker
 
 before_install:
-  - docker --version                      # Write the Docker Version to the Log
-  - pip install --user awscli             # Install the AWS CLI
-  - export PATH=$PATH:HOME/.local/bin     # Put the AWS CLI in the path
+  - docker --version # Write the Docker Version to the Log
+
+after_install:
+  - pip install awscli # Install the AWS CLI
 
 script:
   - source lib/functions.sh                                   # Source helpers
