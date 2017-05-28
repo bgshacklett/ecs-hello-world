@@ -21,19 +21,19 @@ script:
                          "${AWS_ECR_REPO_NAME}"
                          "${DOCKER_IMG_TAG}")
   - docker build --tag "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}" . # Build the img
-  - docker run --detach --publish 8080 ecr-hello-world        # Ensure it runs
+  - docker run --detach --publish 8080 "${DOCKER_IMG_NAME}"   # Ensure it runs
   - docker ps -a                                              # Log containers
   - eval $(aws ecr get-login --region "${AWS_ECR_REPO_REGION}") # Log in to ECR
   - docker tag "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}"
                "${AWS_ECR_URI}"
-  - docker push "${AWS_ECR_URI}"
   - python3 scripts/generate_task_definition.py
             --input-file "task-definition.json"
             --output-file "task-definition-final.json"
             --tag "${DOCKER_IMG_TAG}"
             --environment "${ENVIRONMENT}"
 
-after_success: true
+after_success:
+  - docker push "${AWS_ECR_URI}" # Let's not save broken artifacts.
 
 deploy:
   provider: script
