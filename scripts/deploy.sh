@@ -38,7 +38,7 @@ usage()
 
 register_task_definition()
 {
-
+  echo "Mock registering Task Definition..."
 }
 
 die()
