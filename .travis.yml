@@ -12,6 +12,7 @@ before_install:
 
 script:
   - source lib/functions.sh                                   # Source helpers
+  - mkdir build                                              # Create build dir
   - export ENVIRONMENT=$(get_environment "${TRAVIS_BRANCH}")  # Env from branch
   - export DOCKER_IMG_NAME="ecs-hello-world"
   - export DOCKER_IMG_TAG=${TRAVIS_TAG:-$TRAVIS_COMMIT}
@@ -28,8 +29,8 @@ script:
   - docker tag "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}"
                "${AWS_ECR_URI}"
   - python3 scripts/generate_task_definition.py
-            --input-file "task-definition.json"
-            --output-file "task-definition-final.json"
+            --input-file "etc/task-definition.json"
+            --output-file "build/task-definition.json"
             --tag "${DOCKER_IMG_TAG}"
             --environment "${ENVIRONMENT}"
 
