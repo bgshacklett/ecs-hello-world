@@ -26,7 +26,8 @@ script:
   - docker run --detach --publish 8080 ecr-hello-world        # Ensure it runs
   - docker ps -a                                              # Log containers
   - eval $(aws ecr get-login --region "${AWS_ECR_REPO_REGION}") # Log in to ECR
-  - docker tag "${DOCKER_IMG_NAME}" "${AWS_ECR_URI}"
+  - docker tag "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}"         # Tag the Image
+               "${AWS_ECR_URI}"
   - docker push "${AWS_ECR_URI}"
   - python3 scripts/generate_task_definition.py
             --input-file task-definition.json
