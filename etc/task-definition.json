@@ -6,6 +6,7 @@
             "name": "ecs-hello-world",
             "image": "ecs-hello-world",
             "cpu": 1024,
+            "memoryReservation": 500,
             "portMappings": [
                 {
                     "hostPort": 80,
