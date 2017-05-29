@@ -2,33 +2,43 @@
 
 main()
 {
-  while [[ $# -gt 1 ]]
-  do
-    key="$1"
+  # Transform long options to short ones
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--help")        set -- "$@" "-h" ;;
+      "--environment") set -- "$@" "-e" ;;
+      "--region")      set -- "$@" "-r" ;;
+      "--tag")         set -- "$@" "-t" ;;
+      *)               set -- "$@" "$arg"
+    esac
+  done
 
-    case $key in
-        -e|--environment)
-        local -r ENVIRONMENT="$2"
-        shift # past argument
-        ;;
-        -r|--region)
-        local -r REGION="$2"
-        shift # past argument
-        ;;
-        -t|--tag)
-        local -r TAG="$2"
-        shift # past argument
-        ;;
-        -h|--help)
+  while getopts "he:r:t:" opt; do
+    case $opt in
+      h)
+        debug "Usage details requested."
         usage
         exit $?
         ;;
-        *)
-        usage        # unknown option
+      e)
+        local -r ENVIRONMENT="${OPTARG}"
+        debug "Environment: ${ENVIRONMENT}"
+        ;;
+      r)
+        local -r REGION="${OPTARG}"
+        debug "REGION: ${REGION}"
+        ;;
+      t)
+        local -r TAG="${OPTARG}"
+        debug "TAG: ${TAG}"
+        ;;
+      *)
+        debug "Unknown option; exiting with usage details and an error."
+        usage
         exit 2
         ;;
     esac
-    shift # past argument or value
   done
 
   # Set the path to the build file
