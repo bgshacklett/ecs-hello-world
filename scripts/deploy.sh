@@ -25,7 +25,7 @@ main()
         ;;
         *)
         usage        # unknown option
-        exit 1
+        exit 2
         ;;
     esac
     shift # past argument or value
