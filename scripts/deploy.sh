@@ -8,25 +8,31 @@ main()
 
     case $key in
         -e|--environment)
-        ENVIRONMENT="$2"
+        local -r ENVIRONMENT="$2"
+        shift # past argument
+        ;;
+        -r|--region)
+        local -r REGION="$2"
         shift # past argument
         ;;
         -t|--tag)
-        TAG="$2"
+        local -r TAG="$2"
         shift # past argument
         ;;
         -h|--help)
         usage
+        exit $?
         ;;
         *)
         usage        # unknown option
+        exit 1
         ;;
     esac
     shift # past argument or value
   done
 
+  # Set the path to the build file
   local -r AWS_ECS_TASK_DEFINITION="./build/task-definition.json"
-
 
   # Register the Task Definition
   aws ecs register-task-definition \
@@ -36,7 +42,8 @@ main()
 
 usage()
 {
-  echo "Usage: deploy.sh (-e|--environment) <environment> (-t|--tag) <git tag>"
+  echo "Usage: deploy.sh (-r|--region) <AWS ECS Region> (-e|--environment) <environment> (-t|--tag) <git tag>"
+  return 0
 }
 
 
