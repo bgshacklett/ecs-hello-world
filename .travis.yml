@@ -6,9 +6,10 @@ python: 3.6      # Specify Python3
 services:
   - docker
 
-artifacts:
-  paths:
-    - ./build
+addons:
+  artifacts:
+    paths:
+      - ./build
 
 before_install:
   - docker --version # Write the Docker Version to the Log
