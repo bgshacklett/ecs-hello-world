@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+DEBUG=0
 
 main()
 {
@@ -65,5 +66,17 @@ die()
   exit 1
 }
 
+#
+# debug( msg )
+#  - Prints standard debug message to stderr
+#  - Only print if debugging is enabled
+#
+debug() {
+  if [ "$DEBUG" -ne 1 ]
+  then
+    return
+  fi
+  echo $(date +%T) " $@" > /dev/stderr
+}
 
 main $@
