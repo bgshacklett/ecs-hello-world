@@ -45,6 +45,8 @@ deploy:
     on:
       tags: true
 
+    skip_cleanup: true
+
   # Deploy develop to the development environment.
   - provider: script
     script: scripts/deploy.sh --enviroment "${ENVIRONMENT}"
@@ -52,3 +54,4 @@ deploy:
     on:
       branch: develop
 
+    skip_cleanup: true
