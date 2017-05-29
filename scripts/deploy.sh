@@ -7,11 +7,12 @@ main()
   # Transform long options to short ones
   for arg in "$@"; do
     shift
-    case "$arg" in
+    case "${arg}" in
       "--help")        set -- "$@" "-h" ;;
       "--environment") set -- "$@" "-e" ;;
       "--region")      set -- "$@" "-r" ;;
       "--tag")         set -- "$@" "-t" ;;
+      "--"*)           usage ${arg}; exit2;
       *)               set -- "$@" "$arg"
     esac
   done
@@ -56,6 +57,9 @@ main()
 
 usage()
 {
+  local -r OPTION=$1
+
+  echo "Invalid option: \"${OPTION}\""
   echo "Usage: deploy.sh (-r|--region) <AWS ECS Region> (-e|--environment) <environment> (-t|--tag) <git tag>"
   return 0
 }
