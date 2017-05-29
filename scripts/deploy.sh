@@ -50,6 +50,7 @@ main()
 
   # Register the Task Definition
   aws ecs register-task-definition \
+          --region "${REGION}" \
           --cli-input-json file://"${AWS_ECS_TASK_DEFINITION}" \
             || die "Task Definition Could Not be Registerd"
 }
