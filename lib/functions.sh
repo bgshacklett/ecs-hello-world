@@ -26,6 +26,11 @@ get_environment()
     return 0
   fi
 
+  if [[ "${GIT_BRANCH}" == "develop" ]]; then
+    echo "dev"
+    return 0
+  fi
+
   if [[ " ${environments[@]} " =~ " ${GIT_BRANCH} " ]]; then
     echo "${GIT_BRANCH}"
     return 0

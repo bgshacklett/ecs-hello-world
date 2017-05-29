@@ -25,10 +25,13 @@ main()
     shift # past argument or value
   done
 
+  local -r AWS_ECS_TASK_DEFINITION="./build/task-definition.json"
+
 
   # Register the Task Definition
-  register_task_definition \
-    || die "Task Definition Could Not Be Registerd"
+  aws ecs register-task-definition \
+          --cli-input-json file://"${AWS_ECS_TASK_DEFINITION}" \
+            || die "Task Definition Could Not be Registerd"
 }
 
 usage()
@@ -36,10 +39,6 @@ usage()
   echo "Usage: deploy.sh (-e|--environment) <environment> (-t|--tag) <git tag>"
 }
 
-register_task_definition()
-{
-  echo "Mock registering Task Definition..."
-}
 
 die()
 {
