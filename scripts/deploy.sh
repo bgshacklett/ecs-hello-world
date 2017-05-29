@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 DEBUG=1
-set +x
+set -x
 
 main()
 {
