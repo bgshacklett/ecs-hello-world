@@ -12,7 +12,7 @@ main()
       "--environment") set -- "$@" "-e" ;;
       "--region")      set -- "$@" "-r" ;;
       "--tag")         set -- "$@" "-t" ;;
-      "--"*)           usage ${arg}; exit2;
+      "--"*)           usage ${arg}; exit 2;;
       *)               set -- "$@" "$arg"
     esac
   done

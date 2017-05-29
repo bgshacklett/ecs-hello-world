@@ -41,7 +41,7 @@ deploy:
   # Deploy tagged releases to production.
   - provider: script
     script: scripts/deploy.sh --region "${AWS_ECS_REGION}"
-                              --enviroment "${ENVIRONMENT}"
+                              --environment "${ENVIRONMENT}"
                               --tag "${DOCKER_IMG_TAG}"
     on:
       tags: true
@@ -51,7 +51,7 @@ deploy:
   # Deploy develop to the development environment.
   - provider: script
     script: scripts/deploy.sh --region "${AWS_ECS_REGION}"
-                              --enviroment "${ENVIRONMENT}"
+                              --environment "${ENVIRONMENT}"
                               --tag "${DOCKER_IMG_TAG}"
     on:
       branch: develop
