@@ -39,12 +39,7 @@
             }
         }
     ],
-    "placementConstraints": [
-        {
-            "expression": "",
-            "type": "memberOf"
-        }
-    ],
+    "placementConstraints": [],
     "volumes": [
         {
             "name": "ReadOnly"
