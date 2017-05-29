@@ -6,11 +6,6 @@ python: 3.6      # Specify Python3
 services:
   - docker
 
-addons:
-  artifacts:
-    paths:
-      - ./build
-
 before_install:
   - docker --version # Write the Docker Version to the Log
   - pip install awscli # Install the AWS CLI
