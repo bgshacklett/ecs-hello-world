@@ -1,0 +1,73 @@
+{
+    "family": "ecs-hello-world-test",
+    "taskRoleArn": null,
+    "networkMode": "bridge",
+    "containerDefinitions": [
+        {
+            "name": "ecs-hello-world",
+            "image": "ecs-hello-world",
+            "cpu": 1024,
+            "memory": null,
+            "memoryReservation": null,
+            "links": null,
+            "portMappings": [
+                {
+                    "hostPort": 80,
+                    "containerPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": null,
+            "command": null,
+            "environment": null,
+            "mountPoints": [
+              {
+                "containerPath": "/mnt/readWrite",
+                "sourceVolume" : "ReadWrite",
+                "readOnly": false
+              },
+              {
+                "containerPath": "/mnt/readOnly",
+                "sourceVolume" : "ReadOnly",
+                "readOnly": false
+              }
+            ],
+            "volumesFrom": [],
+            "hostname": null,
+            "user": null,
+            "workingDirectory": null,
+            "disableNetworking": null,
+            "privileged": false,
+            "readonlyRootFilesystem": true,
+            "dnsServers": null,
+            "dnsSearchDomains": null,
+            "extraHosts": null,
+            "dockerSecurityOptions": null,
+            "dockerLabels": null,
+            "ulimits": null,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-group": "ecs-hello-world",
+                  "awslogs-region": "us-east-2",
+                  "awslogs-stream-prefix": null
+                }
+            }
+        }
+    ],
+    "placementConstraints": [
+        {
+            "expression": "",
+            "type": "memberOf"
+        }
+    ],
+    "volumes": [
+        {
+            "name": "ReadOnly"
+        },
+        {
+            "name": "ReadWrite"
+        }
+    ]
+}
