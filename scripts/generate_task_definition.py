@@ -27,9 +27,9 @@ parser.add_argument('-e', '--environment',
                     choices=['prod', 'staging', 'qa', 'dev', 'test'],
                     dest='env',
                     help=fmtHelpTag)
-parser.add_argument('-t', '--tag',
+parser.add_argument('-u', '--image-uri',
                     default='latest',
-                    dest='tag',
+                    dest='image_uri',
                     help=fmtHelpTag)
 parser.add_argument('-i', '--input-file',
                     dest='input_file',
@@ -49,9 +49,7 @@ with open(args.input_file, 'r') as json_data:
 # Append the tag to the image in each task definition.
 # TODO Account for and fix bad image names in the base task definition.
 for i in range(len(task_def['containerDefinitions'])):
-    imageBaseName = task_def['containerDefinitions'][i]['image']
-    imageFullName = imageBaseName + ":" + args.tag
-    task_def['containerDefinitions'][i]['image'] = imageFullName
+    task_def['containerDefinitions'][i]['image'] = args.image_uri
     (task_def['containerDefinitions'][i]
              ['logConfiguration']
              ['options']

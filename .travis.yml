@@ -31,7 +31,7 @@ script:
   - python3 scripts/generate_task_definition.py
             --input-file "etc/task-definition.json"
             --output-file "build/task-definition.json"
-            --tag "${DOCKER_IMG_TAG}"
+            --image-uri "${AWS_ECR_URI}"
             --environment "${ENVIRONMENT}"
 
 after_success:
