@@ -16,6 +16,8 @@ main()
     esac
   done
 
+  debug $@
+
   while getopts "he:r:t:" opt; do
     case $opt in
       h)
