@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-DEBUG=0
+readonly DEBUG=0
 
 main()
 {
@@ -7,23 +7,30 @@ main()
   for arg in "$@"; do
     shift
     case "${arg}" in
-      "--help")        set -- "$@" "-h" ;;
-      "--environment") set -- "$@" "-e" ;;
-      "--region")      set -- "$@" "-r" ;;
-      "--tag")         set -- "$@" "-t" ;;
-      "--"*)           usage ${arg}; exit 2;;
-      *)               set -- "$@" "$arg"
+      "--help")          set -- "$@" "-h" ;;
+      "--cluster-name")  set -- "$@" "-c" ;;
+      "--environment")   set -- "$@" "-e" ;;
+      "--region")        set -- "$@" "-r" ;;
+      "--tag")           set -- "$@" "-t" ;;
+      "--"*)             usage ${arg}; exit 2;;
+      *)                 set -- "$@" "$arg"
     esac
   done
 
-  debug $@
+  # Output all arguments if debug is enabled
+  debug "Arguments: $@"
 
-  while getopts "he:r:t:" opt; do
+  # Pass the transformed args to getopts
+  while getopts "hc:e:r:t:" opt; do
     case $opt in
       h)
         debug "Usage details requested."
         usage
         exit $?
+        ;;
+      c)
+        local -r CLUSTER_NAME="${OPTARG}"
+        debug "Cluster: ${CLUSTER_NAME}"
         ;;
       e)
         local -r ENVIRONMENT="${OPTARG}"
@@ -31,11 +38,11 @@ main()
         ;;
       r)
         local -r REGION="${OPTARG}"
-        debug "REGION: ${REGION}"
+        debug "Region: ${REGION}"
         ;;
       t)
         local -r TAG="${OPTARG}"
-        debug "TAG: ${TAG}"
+        debug "Tag: ${TAG}"
         ;;
       *)
         debug "Unknown option; exiting with usage details and an error."
@@ -45,16 +52,33 @@ main()
     esac
   done
 
-  # Set the path to the build file
-  local -r AWS_ECS_TASK_DEFINITION="./build/task-definition.json"
 
-  # Register the Task Definition
+  # Set the path to the build files
+  local -r AWS_ECS_TASK_DEFINITION_CONFIG="./build/task-definition.json"
+  local -r AWS_ECS_SERVICE_CONFIG="./build/service.json"
+
+
+  # Register the Task Definition and grab the result.
   aws ecs register-task-definition \
           --region "${REGION}" \
-          --cli-input-json file://"${AWS_ECS_TASK_DEFINITION}" \
-            || die "Task Definition Could Not be Registerd"
+          --cli-input-json file://"${AWS_ECS_TASK_DEFINITION_CONFIG}" \
+
+  [[ $? -eq 0 ]] || die "Task Definition could not be registered"
+
+
+  # Create a new Service using this task definition
+  aws ecs create-service \
+          --region "${REGION}" \
+          --cluster "${CLUSTER_NAME}" \
+          --cli-input-json file://"${AWS_ECS_SERVICE_CONFIG}"
+
+  [[ $? -eq 0 ]] || die "Could not create service on cluster ${CLUSTER_NAME}"
 }
 
+
+# usage( option )
+#  - Prints standard usage message to stdout
+#
 usage()
 {
   local -r OPTION=$1
@@ -65,6 +89,10 @@ usage()
 }
 
 
+# die( msg )
+#  - Prints standard debug message to stderr
+#  - Exits >0
+#
 die()
 {
   local message=$1
@@ -73,12 +101,13 @@ die()
   exit 1
 }
 
-#
+
 # debug( msg )
 #  - Prints standard debug message to stderr
 #  - Only print if debugging is enabled
 #
-debug() {
+debug()
+{
   if [ "$DEBUG" -ne 1 ]
   then
     return
