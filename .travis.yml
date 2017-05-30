@@ -22,7 +22,7 @@ script:
                          "${AWS_ECR_REPO_NAME}"
                          "${DOCKER_IMG_TAG}")
   - docker build --tag "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}" . # Build the img
-  - docker run --detach --publish 8080
+  - docker run --detach --publish 80
                "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}"         # Ensure it runs
   - docker ps -a                                              # Log containers
   - eval $(aws ecr get-login --region "${AWS_ECR_REPO_REGION}") # Log in to ECR
