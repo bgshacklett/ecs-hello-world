@@ -29,7 +29,7 @@
             ],
             "volumesFrom": [],
             "privileged": false,
-            "readonlyRootFilesystem": true,
+            "readonlyRootFilesystem": false,
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
