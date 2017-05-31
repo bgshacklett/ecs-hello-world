@@ -1,22 +1,79 @@
 sudo: required
 
-language: php
+language: python # Required for Deployment Script
+python: 3.6      # Specify Python3
 
 services:
   - docker
 
 before_install:
-  - docker --version
-  - pip install --user awscli # Install the AWS CLI
-  - export PATH=$PATH:HOME/.local/bin # Put the AWS CLI in the path
-  - docker build -t ecr-hello-world . # Build the docker image
-  - docker run -d -p 8080 ecr-hello-world # Ensure that it runs
-  - docker ps -a
+  - docker --version # Write the Docker Version to the Log
+  - pip install awscli # Install the AWS CLI
 
 script:
-  - eval $(aws ecr get-login --region ${AWS_ECR_REPO_REGION}) # Log into the ECR repository.
-  - docker tag ecr-hello-world:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REPO_REGION}.amazonaws.com/${AWS_ECR_REPO_NAME}:latest
-  - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_ECR_REPO_REGION}.amazonaws.com/${AWS_ECR_REPO_NAME}:latest > /dev/null
+  # Configure environment resources
+  - source lib/functions.sh  # Source helpers
+  - mkdir build              # Create build dir
 
-after_success: true
+  # Configure environment variables
+  - export ENVIRONMENT=$(get_environment "${TRAVIS_BRANCH}")  # Env from branch
+  - export DOCKER_IMG_NAME="ecs-hello-world"
+  - export DOCKER_IMG_TAG=${TRAVIS_TAG:-$TRAVIS_COMMIT}
+  - export AWS_ECR_URI=$(get_aws_ecr_uri "${AWS_ACCOUNT_ID}"
+                                         "${AWS_ECR_REPO_REGION}"
+                                         "${AWS_ECR_REPO_NAME}"
+                                         "${DOCKER_IMG_TAG}")
 
+  # Build the image
+  - docker build --tag "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}" .
+
+  # Ensure it runs
+  - docker run --detach --publish 80
+               "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}"
+ 
+  # Log running containers
+  - docker ps -a
+
+  # Log in to ECR
+  - eval $(aws ecr get-login --region "${AWS_ECR_REPO_REGION}")
+
+  # Tag the image to prepare it for a push
+  - docker tag "${DOCKER_IMG_NAME}:${DOCKER_IMG_TAG}"
+               "${AWS_ECR_URI}"
+
+  # Generate the final Service and Task Definition configurations files.
+  - python3 ./scripts/compile_ecs_config.py
+            --task-definition-json "etc/task-definition.json"
+            --service-json         "etc/service.json"
+            --output-directory     "./build"
+            --image-uri            "${AWS_ECR_URI}"
+            --environment          "${ENVIRONMENT}"
+
+
+after_success:
+  # Push after a successful build so that we dont save broken artifacts.
+  - docker push "${AWS_ECR_URI}"
+
+
+deploy:
+  # Deploy tagged releases to production.
+  - provider: script
+    script: scripts/deploy.sh --region       "${AWS_ECS_REGION}"
+                              --cluster-name "${AWS_ECS_CLUSTER}"
+                              --environment  "${ENVIRONMENT}"
+                              --tag          "${DOCKER_IMG_TAG}"
+    on:
+      tags: true
+
+    skip_cleanup: true
+
+  # Deploy develop to the development environment.
+  - provider: script
+    script: scripts/deploy.sh --region       "${AWS_ECS_REGION}"
+                              --cluster-name "${AWS_ECS_CLUSTER}"
+                              --environment  "${ENVIRONMENT}"
+                              --tag          "${DOCKER_IMG_TAG}"
+    on:
+      branch: develop
+
+    skip_cleanup: true
