@@ -1,0 +1,30 @@
+{
+    "Statement": [
+        {
+            "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:GetRepositoryPolicy",
+                "ecr:DescribeRepositories",
+                "ecr:ListImages",
+                "ecr:BatchGetImage"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "ecs:CreateCluster",
+                "ecs:RegisterContainerInstance",
+                "ecs:DeregisterContainerInstance",
+                "ecs:DiscoverPollEndpoint",
+                "ecs:Submit*",
+                "ecs:Poll",
+                "ecs:StartTelemetrySession"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        }
+    ]
+}
