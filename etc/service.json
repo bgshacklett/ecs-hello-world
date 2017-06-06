@@ -1,0 +1,13 @@
+{
+  "serviceName": "ecs-hello-world",
+  "taskDefinition": null,
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-2:533030558950:targetgroup/bgs-ECS-ALB-TargetGroup/41c96662db7e4fd1",
+      "containerName": "ecs-hello-world",
+      "containerPort": 80
+    }
+  ],
+  "desiredCount": 1,
+  "role": "ecsServiceRole"
+}

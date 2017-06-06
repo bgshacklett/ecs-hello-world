@@ -1,0 +1,52 @@
+{
+    "family": "ecs-hello-world-test",
+    "networkMode": "bridge",
+    "containerDefinitions": [
+        {
+            "name": "ecs-hello-world",
+            "image": "ecs-hello-world",
+            "cpu": 1024,
+            "memoryReservation": 500,
+            "portMappings": [
+                {
+                    "hostPort": 80,
+                    "containerPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "mountPoints": [
+              {
+                "containerPath": "/mnt/readWrite",
+                "sourceVolume" : "ReadWrite",
+                "readOnly": false
+              },
+              {
+                "containerPath": "/mnt/readOnly",
+                "sourceVolume" : "ReadOnly",
+                "readOnly": false
+              }
+            ],
+            "volumesFrom": [],
+            "privileged": false,
+            "readonlyRootFilesystem": false,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-group": "ecs-hello-world",
+                  "awslogs-region": "us-east-2",
+                  "awslogs-stream-prefix": null
+                }
+            }
+        }
+    ],
+    "placementConstraints": [],
+    "volumes": [
+        {
+            "name": "ReadOnly"
+        },
+        {
+            "name": "ReadWrite"
+        }
+    ]
+}
