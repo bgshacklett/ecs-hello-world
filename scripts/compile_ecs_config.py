@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 import os
 
 #
@@ -87,7 +88,10 @@ for i in range(len(task_def['containerDefinitions'])):
 # Configure the Service with a Name and Task Definition
 # We do this in the build step due to dependencies on the Task Definition
 # TODO Account for a bad existing service name in the base service json.
-service_name = (FMT_SERVICE_NAME % (service['serviceName'], TAG))
+service_name = re.sub('[^a-zA-Z0-9\-_]',
+                      '-',
+                      (FMT_SERVICE_NAME % (service['serviceName'], TAG)))
+
 task_definition_name = task_def['family']
 
 service['serviceName'] = service_name
